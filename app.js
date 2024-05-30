@@ -33,6 +33,9 @@ app.use("/auth", /* isAuthenticated */ protectedRoutes);
 const signupRoutes = require("./routes/signup.routes");
 app.use("/api", signupRoutes);
 
+// USER ROUTES
+const userRoutes = require("./routes/user.routes");
+app.use("/api", userRoutes);
 
 //COMMENT ROUTES
 const commentRoutes = require("./routes/comment.routes");
