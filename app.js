@@ -23,15 +23,19 @@ app.use("/api", indexRoutes);
 
 //LOGIN ROUTES
 const loginRoutes = require("./routes/login.routes");
-app.use("/auth", isAuthenticated, loginRoutes);
+app.use("/auth", /* isAuthenticated */ loginRoutes);
 
 //PROTECTED ROUTES
 const protectedRoutes = require("./routes/protected.routes");
-app.use("/auth", isAuthenticated, protectedRoutes);
+app.use("/auth", /* isAuthenticated */ protectedRoutes);
 
+//SIGNUP ROUTES
 const signupRoutes = require("./routes/signup.routes");
 app.use("/auth", signupRoutes);
 
+//RATING ROUTES
+const ratingRoutes = require("./routes/rating.routes");
+app.use("/api", ratingRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
