@@ -3,20 +3,6 @@ const router = express.Router();
 const Rating = require("../models/Rating.model");
 const Action = require("../models/Action.model");
 
-// Create a new rating
-/* router.post("/ratings", (req, res) => {
-  const { user, anime, score } = req.body;
-  const newRating = new Rating({ user, anime, score });
-
-  newRating
-    .save()
-    .then((savedScore) => {
-      res.status(201).json(savedScore);
-    })
-    .catch((error) => {
-      res.status(400).json({ message: "Error creating rating", error });
-    });
-}); */
 //Create a new rating -- OTHER WAY
 router.post("/ratings", (req, res) => {
   const { user, anime, score } = req.body;
@@ -29,8 +15,8 @@ router.post("/ratings", (req, res) => {
         type: "rating",
         anime,
         rating: savedRating._id,
-      }).then((savedAction) => {
-        res.status(201).json({ rating: savedRating, action: savedAction });
+      }).then((actionRating) => {
+        res.status(201).json({ rating: savedRating, action: actionRating });
       });
     })
     .catch((error) => {
@@ -53,38 +39,46 @@ router.get("/:animeId/ratings", (req, res) => {
     });
 });
 
-//Update rating by id
+// Update rating by ID
 router.put("/:animeId/ratings/:ratingId", (req, res) => {
   const { ratingId } = req.params;
-  const { score } = req.body;
+  const { user, score, actionsId } = req.body;
 
   Rating.findByIdAndUpdate(ratingId, { score }, { new: true })
     .then((rating) => {
       if (!rating) {
         return res.status(404).json({ error: "Rating not found" });
       }
-      res.json(rating);
+      return Action.findByIdAndUpdate(actionsId, {
+        user,
+        type: "rating",
+        rating: rating._id,
+      }).then((actionRating) => {
+        res.json({ rating, action: actionRating });
+      });
     })
     .catch((error) => {
-      console.error("Error updating rating by Id", error);
-      res.status(500).json({ error: "Fail to update by Id" });
+      console.error("Error updating rating by ID", error);
+      res.status(500).json({ error: "Failed to update rating by ID" });
     });
 });
 
 //Delete a rating by Id
-router.delete("/:animeId/ratings/:ratingId", (req, res) => {
-  const { ratingId } = req.params;
+router.delete("/:animeId/ratings/:ratingId/:actionsId", (req, res) => {
+  const { ratingId, actionsId } = req.params;
 
   Rating.findByIdAndDelete(ratingId)
     .then((rating) => {
       if (!rating) {
         return res.status(404).json({ error: "Rating not found" });
       }
-      res.json(rating);
+      return Action.findByIdAndDelete(actionsId).then((actionRating) => {
+        res.json({ rating, action: actionRating });
+      });
     })
     .catch((error) => {
-      console.log(error("Error deleting rating", error));
-      res.status(500).json({ error: "Fail to delete rating" });
+      console.error("Error updating deleting by ID", error);
+      res.status(500).json({ error: "Failed to delete rating by ID" });
     });
 });
 
