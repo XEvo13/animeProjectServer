@@ -47,7 +47,7 @@ router.get("/:animeId/comments", (req,res)=>{
 
     // UPDATE COMMENTS BY ANIMEID AND COMMENT ID
 
-router.put("/:animeId/comments/:commentId",  (req, res)=> {
+router.put("/comments/:commentId",  (req, res)=> {
     const {commentId } = req.params;
     const {user, content, actionsId } = req.body;
 
@@ -75,7 +75,7 @@ router.put("/:animeId/comments/:commentId",  (req, res)=> {
 })
 
     //  DELETE THE COMMENT
-router.delete("/:animeId/comments/:commentId/:actionsId", (req, res) => {
+router.delete("/comments/:commentId/:actionsId", (req, res) => {
     const {commentId, actionsId} = req.params;
 
     Comment.findByIdAndDelete(commentId)
