@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Rating = require("../models/Rating.model");
+const Action = require("../models/Action.model");
 
 // Create a new rating
-router.post("/ratings", (req, res) => {
+/* router.post("/ratings", (req, res) => {
   const { user, anime, score } = req.body;
   const newRating = new Rating({ user, anime, score });
 
@@ -11,6 +12,26 @@ router.post("/ratings", (req, res) => {
     .save()
     .then((savedScore) => {
       res.status(201).json(savedScore);
+    })
+    .catch((error) => {
+      res.status(400).json({ message: "Error creating rating", error });
+    });
+}); */
+//Create a new rating -- OTHER WAY
+router.post("/ratings", (req, res) => {
+  const { user, anime, score } = req.body;
+
+  Rating.create({ user, anime, score })
+    .then((savedRating) => {
+      //Create an Action
+      return Action.create({
+        user,
+        type: "rating",
+        anime,
+        rating: savedRating._id,
+      }).then((savedAction) => {
+        res.status(201).json({ rating: savedRating, action: savedAction });
+      });
     })
     .catch((error) => {
       res.status(400).json({ message: "Error creating rating", error });
