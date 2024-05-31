@@ -45,6 +45,9 @@ app.use("/api", commentRoutes);
 const ratingRoutes = require("./routes/rating.routes");
 app.use("/api", ratingRoutes);
 
+//ACTION ROUTES
+const actionRoutes = require("./routes/action.routes");
+app.use("/api", actionRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
