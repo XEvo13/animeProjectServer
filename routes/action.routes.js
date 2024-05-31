@@ -21,7 +21,7 @@ router.post("/actions", (req, res) => {
 router.get("/:actionsId/actions", (req, res) => {
   const { actionsId } = req.params;
 
-  Action.find({ actions: actionsId })
+  Action.findById(actionsId)
     .populate("user")
     .populate("comment")
     .populate("rating")
@@ -34,6 +34,23 @@ router.get("/:actionsId/actions", (req, res) => {
     })
     .catch((error) => {
       res.status(400).json({ message: "Error fetching actions", error });
+    });
+});
+
+// DELETE ACTION BY ID
+router.delete("/actions/:actionId", (req, res) => {
+  const { actionId } = req.params;
+
+  Action.findByIdAndDelete(actionId)
+    .then((action) => {
+      if (!action) {
+        return res.status(404).json({ error: "Action not found" });
+      }
+      res.json(action);
+    })
+    .catch((error) => {
+      console.log("Error deleting action by Id", error);
+      res.status(500).json({ error: "Failed to delete action by Id" });
     });
 });
 
