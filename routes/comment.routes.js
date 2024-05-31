@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Comment = require("../models/Comment.model")
 const Action = require("../models/Action.model")
 
-// POST COMMENTS
+// POST COMMENTS AND ACTIONS
 
 router.post("/comments", (req, res)=> {
     const {user, anime, content} = req.body
@@ -12,23 +12,29 @@ router.post("/comments", (req, res)=> {
       anime, 
       content
     })
-    .then((comment) =>
-    res.status(201).json(comment))
-  })
-    .then((actioncomment) =>{
+    .then((comment) =>{
         return Action.create({
-            
+            user,
+            type: "comment",
+            anime,
+            comment: comment._id
+        })
+        .then((commentAction) => {
+            res.status(201).json({comment, action:commentAction})
         })
     })
-
-  module.exports = router;
+    .then((comment) => res.status(201).json(comment))
+    .catch((error) => {
+        res.status(400).json({ message: "Error creating comment", error });
+    });
+})
 
   // GET COMMENTS BY ANIME
 
 router.get("/:animeId/comments", (req,res)=>{
     const {animeId} = req.params;
     // console.log(animeId);
-    Comment.find({anime:animeId})
+    Comment.findById(animeId)
     .populate("user", "name")
     .populate("anime")
     .then((comments)=>{
@@ -42,15 +48,25 @@ router.get("/:animeId/comments", (req,res)=>{
     // UPDATE COMMENTS BY ANIMEID AND COMMENT ID
 
 router.put("/:animeId/comments/:commentId",  (req, res)=> {
-    const {commentId} = req.params;
-    const {content} = req.body;
+    const {commentId } = req.params;
+    const {user, content, actionsId } = req.body;
 
     Comment.findByIdAndUpdate(commentId, {content}, {new: true})
     .then((comment) => {
         if(!comment) {
             return res.status(404).json({ error: "Rating not found" });
         }
-        res.json(comment);
+         return Action.findByIdAndUpdate(actionsId, {
+            
+         })
+         .then((actionComment) => {
+            res.json({comment, action: actionComment})
+         })
+        //  .catch((error)=> {
+        //     console.error("Error updating comment by Id", error)
+        //     res.status(500).json({error: "Failed to update comment by Id"})
+        //  }) 
+        // res.json(comment);
     })
     .catch((error) => {
         console.error("Error updating rating by Id", error);
@@ -59,19 +75,23 @@ router.put("/:animeId/comments/:commentId",  (req, res)=> {
 })
 
     //  DELETE THE COMMENT
-router.delete("/:animeId/comments/:commentId", (req, res) => {
-    const {commentId} = req.params;
+router.delete("/:animeId/comments/:commentId/:actionsId", (req, res) => {
+    const {commentId, actionsId} = req.params;
 
     Comment.findByIdAndDelete(commentId)
     .then((comment) => {
         if(!comment) {
             return res.status(404).json({error: 'Comment not found'})
         }
-        res.json(comment);
+        return Action.findByIdAndDelete(actionsId)
+        .then((actionComment)=> {
+        res.json({comment, action: actionComment})
+        })
     })
     .catch((error)=> {
         console.log(error('Error deleting comment by Id', error));
         res.status(500).json({error: 'Fail to delete comment by Id'})
       });    
-
 })
+
+module.exports = router;

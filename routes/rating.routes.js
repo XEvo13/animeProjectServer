@@ -29,7 +29,8 @@ router.post("/ratings", (req, res) => {
         type: "rating",
         anime,
         rating: savedRating._id,
-      }).then((savedAction) => {
+      })
+      .then((savedAction) => {
         res.status(201).json({ rating: savedRating, action: savedAction });
       });
     })
