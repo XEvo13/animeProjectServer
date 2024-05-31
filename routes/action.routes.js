@@ -21,6 +21,7 @@ router.post("/actions", (req, res) => {
 router.get("/:actionsId/actions", (req, res) => {
   const { actionsId } = req.params;
 
+
   Action.findById(actionsId)
     .populate("user")
     .populate("comment")
