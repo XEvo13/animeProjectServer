@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Comment = require("../models/Comment.model")
+const Action = require("../models/Action.model")
 
 // POST COMMENTS
 
@@ -14,6 +15,11 @@ router.post("/comments", (req, res)=> {
     .then((comment) =>
     res.status(201).json(comment))
   })
+    .then((actioncomment) =>{
+        return Action.create({
+            
+        })
+    })
 
   module.exports = router;
 

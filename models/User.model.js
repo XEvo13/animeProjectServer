@@ -14,6 +14,8 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
     animes: [{ type: Schema.Types.ObjectId, ref: "Anime" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], 
+    ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }]
   },
   {
     timestamps: true,
