@@ -40,20 +40,16 @@ router.get("/:animeId/ratings", (req, res) => {
 });
 
 // Update rating by ID
-router.put("/:animeId/ratings/:ratingId", (req, res) => {
+router.put("/ratings/:ratingId", (req, res) => {
   const { ratingId } = req.params;
-  const { user, score, actionsId } = req.body;
+  const { score, actionsId } = req.body;
 
   Rating.findByIdAndUpdate(ratingId, { score }, { new: true })
     .then((rating) => {
       if (!rating) {
         return res.status(404).json({ error: "Rating not found" });
       }
-      return Action.findByIdAndUpdate(actionsId, {
-        user,
-        type: "rating",
-        rating: rating._id,
-      }).then((actionRating) => {
+      return Action.findByIdAndUpdate(actionsId).then((actionRating) => {
         res.json({ rating, action: actionRating });
       });
     })
@@ -64,7 +60,7 @@ router.put("/:animeId/ratings/:ratingId", (req, res) => {
 });
 
 //Delete a rating by Id
-router.delete("/:animeId/ratings/:ratingId/:actionsId", (req, res) => {
+router.delete("/ratings/:ratingId/:actionsId", (req, res) => {
   const { ratingId, actionsId } = req.params;
 
   Rating.findByIdAndDelete(ratingId)
