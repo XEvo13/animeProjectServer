@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Comment = require("../models/Comment.model")
 const Action = require("../models/Action.model")
+const User = require("../models/User.model")
 
 // POST COMMENTS AND ACTIONS
 
@@ -20,10 +21,13 @@ router.post("/comments", (req, res)=> {
             comment: comment._id
         })
         .then((commentAction) => {
-            res.status(201).json({comment, action:commentAction})
+            return User.findByIdAndUpdate(user, {$push: {comments: comment._id}})
+            .then(()=> {
+                res.status(201).json({comment, action:commentAction})
+            })
+            
         })
     })
-    .then((comment) => res.status(201).json(comment))
     .catch((error) => {
         res.status(400).json({ message: "Error creating comment", error });
     });
@@ -85,7 +89,10 @@ router.delete("/comments/:commentId/:actionsId", (req, res) => {
         }
         return Action.findByIdAndDelete(actionsId)
         .then((actionComment)=> {
-        res.json({comment, action: actionComment})
+            return User.findByIdAndUpdate(comment.user,{ $pull: {comments: commentId}})
+            .then(()=> {
+                res.json({comment, action: actionComment})
+            })
         })
     })
     .catch((error)=> {
