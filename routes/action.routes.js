@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Action = require("../models/Action.model");
+const User = require("../models/User.model")
 
 // Create a new action
 // router.post("/actions", (req, res) => {
