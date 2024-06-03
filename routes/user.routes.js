@@ -42,6 +42,99 @@ router.put("/:userId/edit", (req, res)=>{
     })
 })
 
+// USER FRIEND ADD
+router.put("/:userId/friend/:friendId", (req, res) => {
+    const { userId, friendId } = req.params;
+
+    User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { friends: friendId } }, // addToSet ensures no duplicates
+        { new: true }
+    )
+    .populate("friends")
+    .then((user) => {
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return User.findByIdAndUpdate(
+            friendId,
+            { $addToSet: { friends: userId } }, // addToSet ensures no duplicates
+            { new: true }
+        )
+        .populate("friends")
+        .then((friend) => {
+            if (!friend) {
+                return res.status(404).json({ error: "Friend not found" });
+            }
+
+            res.json({ user, friend });
+        });
+    })
+    .catch((error) => {
+        console.error("Error adding friend by Id", error);
+        res.status(500).json({ error: "Fail to add friend by Id" });
+    });
+});
+
+router.put("/:userId/unfriend/:friendId", (req, res) => {
+    const { userId, friendId } = req.params;
+
+    User.findByIdAndUpdate(
+        userId,
+        { $pull: { friends: friendId } }, // $pull removes the friendId from the friends array
+        { new: true }
+    )
+    .populate("friends")
+    .then((user) => {
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return User.findByIdAndUpdate(
+            friendId,
+            { $pull: { friends: userId } }, // $pull removes the userId from the friends array
+            { new: true }
+        )
+        .populate("friends")
+        .then((friend) => {
+            if (!friend) {
+                return res.status(404).json({ error: "Friend not found" });
+            }
+
+            res.json({ user, friend });
+        });
+    })
+    .catch((error) => {
+        console.error("Error removing friend by Id", error);
+        res.status(500).json({ error: "Fail to remove friend by Id" });
+    });
+});
+
+
+// ADD ANIME
+
+router.put("/:userId/anime/:animeId", (req, res) => {
+    const { userId, animeId } = req.params;
+
+    User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { animes: animeId } }, 
+        { new: true }
+    )
+    .populate("animes")
+    .then((user) => {
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json(user);
+    })
+    .catch((error) => {
+        console.error("Error adding anime by Id", error);
+        res.status(500).json({ error: "Fail to add anime by Id" });
+    });
+});
+
 
 // USER DELETE
 
