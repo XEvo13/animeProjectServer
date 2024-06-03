@@ -7,17 +7,18 @@ const User  = require("../models/User.model");
 // SIGN UP
 
 router.post("/signup", async(req, res)=> {
-    const {password, email, name} = req.body;
+    const {email, password, name} = req.body;
 
     if(!name || ! email || !password ) {
-        res.status(400).send({ error: "Please provide username, password and name" });
-        return;
+        // console.log("Error:", errorMessage);
+        return res.status(400).json({ message: "Please provide username, password, and name" });
+        
     }
 
     const existingUser = await User.findOne({email});
-    if(existingUser) {
-        res.status(400).send({ error: "User already exists" });
-        return;
+    if(existingUser) {     
+        // console.log("Error:", errorMessage);   
+        return res.status(400).json({ message: "User already exists" });
     }
 
     const salt = await bcrypt.genSalt(12);
