@@ -21,6 +21,22 @@ router.get('/animes', (req, res) => {
     });
 })
 
+// GET SINGLE ANIME
+router.get('/anime/:id', (req, res) => {
+  const { id } = req.params;
+
+  Anime.findById(id)
+    .then(anime => {
+      if (!anime) {
+        return res.status(404).json({ error: 'Anime not found' });
+      }
+      res.status(200).json(anime);
+    })
+    .catch(error => {
+      console.error('Error fetching anime details:', error);
+      res.status(500).json({ error: 'Failed to fetch anime details' });
+    });
+});
 
 
 module.exports = router;
