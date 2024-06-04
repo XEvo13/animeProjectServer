@@ -22,6 +22,18 @@ router.get("/:userId", (req, res)=> {
     })
 })
 
+// GET ALL USERS
+
+router.get("/users/all", (req, res) => {
+    User.find()
+        .then(users => {
+            res.status(200).json(users);
+        })
+        .catch(error => {
+            console.error('Error getting all users', error);
+            res.status(500).json({ error: 'Failed to get all users' });
+        });
+});
 
 // USER EDIT
 

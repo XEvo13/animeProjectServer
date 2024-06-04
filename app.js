@@ -28,7 +28,7 @@ app.use("/auth", /* isAuthenticated */ loginRoutes);
 
 //PROTECTED ROUTES
 const protectedRoutes = require("./routes/protected.routes");
-app.use("/auth", /* isAuthenticated */ protectedRoutes);
+app.use("/auth", isAuthenticated , protectedRoutes);
 
 //SIGNUP ROUTES
 const signupRoutes = require("./routes/signup.routes");

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-router.get("verify", (req, res) => {
+router.get("/verify", (req, res) => {
   const { payload } = req;
   res.send(payload);
 });

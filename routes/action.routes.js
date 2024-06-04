@@ -33,12 +33,12 @@ router.get("/:userId/friendsactions", (req, res) => {
       const friendsIds = user.friends.map(friend => friend._id);
 
       return Action.find({ user: { $in: friendsIds } })
-        .populate("user")
+        .populate("user", "name")
         .populate("anime")
         .populate("comment")
         .populate("rating")
         .sort({ createdAt: -1 })
-        .limit(2)
+        .limit(10)
         .then(actions => {
           res.status(200).json(actions);
         });
