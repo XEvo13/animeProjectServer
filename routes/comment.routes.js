@@ -49,6 +49,24 @@ router.get("/:animeId/comments", (req,res)=>{
     })
 })
 
+
+// GET a user's comment for a specific anime
+router.get('/comments/:animeId/:userId', (req, res) => {
+    const { animeId, userId } = req.params;
+
+    Comment.findOne({ anime: animeId, user: userId })
+        .then(comment => {
+            if (!comment) {
+                return res.status(200).json(null);
+            }
+            res.status(200).json(comment);
+        })
+        .catch(error => {
+            console.error('Error fetching user comment:', error);
+            res.status(500).json({ error: 'Failed to fetch user comment' });
+        });
+});
+
     // UPDATE COMMENTS BY ANIMEID AND COMMENT ID
 
 router.put("/comments/:commentId",  (req, res)=> {
