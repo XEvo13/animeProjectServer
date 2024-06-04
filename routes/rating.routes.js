@@ -2,21 +2,26 @@ const express = require("express");
 const router = express.Router();
 const Rating = require("../models/Rating.model");
 const Action = require("../models/Action.model");
+const User = require("../models/User.model");
 
 //Create a new rating -- OTHER WAY
 router.post("/ratings", (req, res) => {
   const { user, anime, score } = req.body;
 
   Rating.create({ user, anime, score })
-    .then((savedRating) => {
+    .then((rating) => {
       //Create an Action
       return Action.create({
         user,
         type: "rating",
         anime,
-        rating: savedRating._id,
+        rating: rating._id,
       }).then((actionRating) => {
-        res.status(201).json({ rating: savedRating, action: actionRating });
+        return User.findByIdAndUpdate(user, {
+          $push: { ratings: rating._id },
+        }).then(() => {
+          res.status(201).json({ rating: rating, action: actionRating });
+        });
       });
     })
     .catch((error) => {
@@ -69,7 +74,11 @@ router.delete("/ratings/:ratingId/:actionsId", (req, res) => {
         return res.status(404).json({ error: "Rating not found" });
       }
       return Action.findByIdAndDelete(actionsId).then((actionRating) => {
-        res.json({ rating, action: actionRating });
+        return User.findByIdAndUpdate(rating.user, {
+          $pull: { ratings: rating._id },
+        }).then(() => {
+          res.json({ rating, action: actionRating });
+        });
       });
     })
     .catch((error) => {
