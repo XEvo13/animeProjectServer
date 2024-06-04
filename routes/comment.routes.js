@@ -35,21 +35,6 @@ router.post("/comments", (req, res)=> {
 
   // GET COMMENTS BY ANIME
 
-router.get("/:animeId/comments", (req,res)=>{
-    const {animeId} = req.params;
-    // console.log(animeId);
-    Comment.findById(animeId)
-    .populate("user", "name")
-    .populate("anime")
-    .then((comments)=>{
-        res.status(200).json(comments);
-    })
-    .catch((error) => {
-        res.status(400).json({ message: "Error finding the comments", error });
-    })
-})
-
-
 // GET a user's comment for a specific anime
 router.get('/comments/:animeId/:userId', (req, res) => {
     const { animeId, userId } = req.params;
@@ -59,13 +44,52 @@ router.get('/comments/:animeId/:userId', (req, res) => {
             if (!comment) {
                 return res.status(200).json(null);
             }
-            res.status(200).json(comment);
+            // Find the associated action
+            return Action.findOne({ comment: comment._id })
+                .then(action => {
+                    if (!action) {
+                        return res.status(200).json({ comment });
+                    }
+                    res.status(200).json({ comment, actionsId: action._id });
+                });
         })
         .catch(error => {
             console.error('Error fetching user comment:', error);
             res.status(500).json({ error: 'Failed to fetch user comment' });
         });
 });
+
+// GET COMMENTS BY ANIME ID
+router.get("/comments/anime/:animeId", (req, res) => {
+    const { animeId } = req.params;
+
+    Comment.find({ anime: animeId })
+        .populate('user', 'name') // Assuming you want to include user details
+        .then(comments => {
+            res.status(200).json(comments);
+        })
+        .catch(error => {
+            console.error('Error fetching comments:', error);
+            res.status(500).json({ error: 'Failed to fetch comments' });
+        });
+});
+
+// // GET a user's comment for a specific anime
+// router.get('/comments/:animeId/:userId', (req, res) => {
+//     const { animeId, userId } = req.params;
+
+//     Comment.findOne({ anime: animeId, user: userId })
+//         .then(comment => {
+//             if (!comment) {
+//                 return res.status(200).json(null);
+//             }
+//             res.status(200).json(comment);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching user comment:', error);
+//             res.status(500).json({ error: 'Failed to fetch user comment' });
+//         });
+// });
 
     // UPDATE COMMENTS BY ANIMEID AND COMMENT ID
 
