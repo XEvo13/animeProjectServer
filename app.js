@@ -36,19 +36,19 @@ app.use("/api", signupRoutes);
 
 // USER ROUTES
 const userRoutes = require("./routes/user.routes");
-app.use("/api", userRoutes);
+app.use("/api", userRoutes, protectedRoutes);
 
 //COMMENT ROUTES
 const commentRoutes = require("./routes/comment.routes");
-app.use("/api", commentRoutes);
+app.use("/api", commentRoutes, protectedRoutes);
 
 //RATING ROUTES
 const ratingRoutes = require("./routes/rating.routes");
-app.use("/api", ratingRoutes);
+app.use("/api", ratingRoutes, protectedRoutes);
 
 //ACTION ROUTES
 const actionRoutes = require("./routes/action.routes");
-app.use("/api", actionRoutes);
+app.use("/api", actionRoutes, protectedRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
