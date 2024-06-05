@@ -25,12 +25,13 @@ router.get("/:userId/friendsactions", (req, res) => {
 
   User.findById(userId)
     .populate("friends")
+   
     .then(user => {
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const friendsIds = user.friends.map(friend => friend._id);
+      const friendsIds = user.friends.map(friend => friend._id)
 
       return Action.find({ user: { $in: friendsIds } })
         .populate("user", "name")
