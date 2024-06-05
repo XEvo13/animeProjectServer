@@ -28,7 +28,7 @@ app.use("/auth", /* isAuthenticated */ loginRoutes);
 
 //PROTECTED ROUTES
 const protectedRoutes = require("./routes/protected.routes");
-app.use("/auth", isAuthenticated , protectedRoutes);
+app.use("/auth", isAuthenticated, protectedRoutes);
 
 //SIGNUP ROUTES
 const signupRoutes = require("./routes/signup.routes");
@@ -40,11 +40,11 @@ app.use("/api", userRoutes);
 
 //COMMENT ROUTES
 const commentRoutes = require("./routes/comment.routes");
-app.use("/api", commentRoutes);
+app.use("/api", commentRoutes, protectedRoutes);
 
 //RATING ROUTES
 const ratingRoutes = require("./routes/rating.routes");
-app.use("/api", ratingRoutes);
+app.use("/api", ratingRoutes, protectedRoutes);
 
 //ACTION ROUTES
 const actionRoutes = require("./routes/action.routes");

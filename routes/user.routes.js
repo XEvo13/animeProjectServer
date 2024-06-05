@@ -190,4 +190,39 @@ router.delete("/:userId/edit", (req, res) => {
     });
 });
 
+//UNFRIEND A FRIEND
+router.put("/:userId/unfriend/:friendId", (req, res) => {
+  const { userId, friendId } = req.params;
+
+  User.findByIdAndUpdate(
+    userId,
+    { $pull: { friends: friendId } },
+    { new: true }
+  )
+    .populate("friends")
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return User.findByIdAndUpdate(
+        friendId,
+        { $pull: { friends: userId } },
+        { new: true }
+      )
+        .populate("friends")
+        .then((friend) => {
+          if (!friend) {
+            return res.status(404).json({ error: "Friend not found" });
+          }
+
+          res.json({ user, friend });
+        });
+    })
+    .catch((error) => {
+      console.error("Error removing friend by Id", error);
+      res.status(500).json({ error: "Fail to remove friend by Id" });
+    });
+});
+
 module.exports = router;
